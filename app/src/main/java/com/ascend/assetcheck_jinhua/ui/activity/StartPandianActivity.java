@@ -1,23 +1,25 @@
 package com.ascend.assetcheck_jinhua.ui.activity;
 
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TabHost;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +29,6 @@ import com.ascend.assetcheck_jinhua.api.ExceptionHandle;
 import com.ascend.assetcheck_jinhua.api.MySubscriber;
 import com.ascend.assetcheck_jinhua.base.BaseActivity;
 import com.ascend.assetcheck_jinhua.envent.MessageEvent;
-import com.ascend.assetcheck_jinhua.result.LoadResultBack;
 import com.ascend.assetcheck_jinhua.result.TaskResult;
 import com.ascend.assetcheck_jinhua.result.getLoadTaskResultBack;
 import com.ascend.assetcheck_jinhua.result.upLoadResult;
@@ -45,7 +46,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -68,6 +68,8 @@ public class StartPandianActivity extends BaseActivity {
     RecyclerView recyclerview1;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    @BindView(R.id.num)
+    TextView num;
 
     private TotalAdapter totalAdapter;
     private List<TaskResult> totalDatas;
@@ -130,27 +132,25 @@ public class StartPandianActivity extends BaseActivity {
                             List<UHfData.InventoryTagMap> back = UHfData.lsTagList;
                             for (int i = 0; i < allDatas.size(); i++) {
                                 allDatas.get(i).setActualQuantity(1);
-                                allDatas.get(i).setDifferenceNum(allDatas.get(i).getInventoryNum()-allDatas.get(i).getActualQuantity());
+                                allDatas.get(i).setDifferenceNum(allDatas.get(i).getInventoryNum() - allDatas.get(i).getActualQuantity());
                                 for (int j = 0; j < back.size(); j++) {
                                     if (allDatas.get(i).getProductCode().equals(back.get(j).strEPC)) {
-                                        if (allDatas.get(i).getInventoryNum() == allDatas.get(i).getActualQuantity()){
+                                        if (allDatas.get(i).getInventoryNum() == allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("相符");
                                             totalDatas.add(allDatas.get(i));
-                                        }
-                                        else if (allDatas.get(i).getInventoryNum()>allDatas.get(i).getActualQuantity()){
+                                        } else if (allDatas.get(i).getInventoryNum() > allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("盘亏");
                                             abnormalDatas.add(allDatas.get(i));
-                                        }
-                                        else if (allDatas.get(i).getInventoryNum()<allDatas.get(i).getActualQuantity()){
+                                        } else if (allDatas.get(i).getInventoryNum() < allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("盘盈");
                                             abnormalDatas.add(allDatas.get(i));
                                         }
                                     }
                                 }
                             }
+                            num.setText("总数:"+(abnormalDatas.size()+totalDatas.size()));
                             abnormalAdapter.notifyDataSetChanged();
                             totalAdapter.notifyDataSetChanged();
-
                             break;
                         default:
                             break;
@@ -243,6 +243,18 @@ public class StartPandianActivity extends BaseActivity {
         abnormalAdapter = new AbnormalAdapter(this, abnormalDatas);
         recyclerview1.setAdapter(abnormalAdapter);
         recyclerview1.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
+        abnormalAdapter.setOnItemClickListener(new AbnormalAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                showDialogsByCause(StartPandianActivity.this,true,"备注","确定",position);
+            }
+
+            @Override
+            public void onLongClick(int position) {
+
+            }
+        });
     }
 
     @OnClick({R.id.back, R.id.bg_finish, R.id.total, R.id.abnormal, R.id.fab})
@@ -252,12 +264,13 @@ public class StartPandianActivity extends BaseActivity {
                 break;
             case R.id.bg_finish:
                 //完成盘点
-                for (TaskResult result:allDatas){
-                    if (result.getInventoryResult()==null){
+                for (TaskResult result : allDatas) {
+                    if (result.getInventoryResult() == null) {
                         showNormalDialog();
                         return;
                     }
                 }
+
                 commitData();
                 break;
             case R.id.total:
@@ -490,7 +503,7 @@ public class StartPandianActivity extends BaseActivity {
         }
     }
 
-    private void showNormalDialog(){
+    private void showNormalDialog() {
         /* @setIcon 设置对话框图标
          * @setTitle 设置对话框标题
          * @setMessage 设置对话框消息提示
@@ -505,8 +518,8 @@ public class StartPandianActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //...To-do
-                        for (int i=0;i>allDatas.size();i++){
-                            if (allDatas.get(i).getInventoryResult()==null){
+                        for (int i = 0; i > allDatas.size(); i++) {
+                            if (allDatas.get(i).getInventoryResult() == null) {
                                 allDatas.get(i).setInventoryResult("盘亏");
                                 abnormalDatas.add(allDatas.get(i));
                             }
@@ -523,6 +536,66 @@ public class StartPandianActivity extends BaseActivity {
                 });
         // 显示
         normalDialog.show();
+    }
+
+    /**
+     * @param context
+     * @param b         确定按钮的颜色  false 为红色  true为蓝色
+     * @param titles    对话框的内容
+     * @param commitStr 确定按钮的显示内容
+     *                  //     * @param onClickListenerCancle  取消按钮的点击事件
+     * @return 带Editetext dialog
+     */
+    public AlertDialog showDialogsByCause(final Context context, boolean b, String titles, String
+            commitStr, final int pos) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setCancelable(false);
+        alertDialog.setCanceledOnTouchOutside(false);
+        View views = LayoutInflater.from(context).inflate(R.layout.dialog_add_order_edite, null);
+        Window window = alertDialog.getWindow();
+        window.setBackgroundDrawableResource(android.R.color.transparent);
+
+        LinearLayout layout = (LinearLayout) views.findViewById(R.id.layout);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
+        params.setMargins(60, 0, 60, 0);
+        layout.setLayoutParams(params);
+
+        alertDialog.show();
+        TextView title = (TextView) views.findViewById(R.id.title);
+        final EditText content_et = (EditText) views.findViewById(R.id.content_et);
+        final Button commitBtn = (Button) views.findViewById(R.id.commit_btn);
+        commitBtn.setText(commitStr);
+
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+
+        final Button cancle = (Button) views.findViewById(R.id.cancle_btn);
+        if (b) {
+            commitBtn.setBackground(context.getResources().getDrawable(R.drawable.tag_add_order));
+        } else {
+            commitBtn.setBackground(context.getResources().getDrawable(R.drawable
+                    .tag_gradle_commit));
+        }
+        title.setText(titles);
+        cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        commitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //执行操作
+                    abnormalDatas.get(pos).setRemark(content_et.getText().toString());
+                    for (int i=0;i<allDatas.size();i++){
+                        if (allDatas.get(i).getId().equals(abnormalDatas.get(pos).getId())){
+                            allDatas.get(i).setRemark(content_et.getText().toString());
+                        }
+                    }
+            }
+        });
+        window.setContentView(views);
+        return alertDialog;
     }
 }
 

@@ -18,6 +18,7 @@
             android:textColor="@color/black33"
             android:text="盘点清单"/>
         <TextView
+            android:id="@+id/num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black33"

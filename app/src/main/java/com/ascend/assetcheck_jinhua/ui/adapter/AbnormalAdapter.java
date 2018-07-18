@@ -34,6 +34,7 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
 
     private Context mContext;
     private List<TaskResult> datas;
+    private OnItemClickListener mOnItemClickListener;
 
     public AbnormalAdapter(Context context, List<TaskResult> datas) {
         mContext = context;
@@ -50,22 +51,25 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
     public void onBindViewHolder(Holder holder, final int position) {
         TaskResult result = datas.get(position);
 //        private String inventoryResult;//盘点结果(相符   盘亏  盘盈)
-        if (result.getInventoryResult().equals("盘亏")){
-            holder.image.setBackground(ContextCompat.getDrawable(mContext,R.drawable.text_lost));
+        if (result.getInventoryResult().equals("盘亏")) {
+            holder.image.setBackground(ContextCompat.getDrawable(mContext, R.drawable.text_lost));
             holder.image.setText("少");
             holder.bgBeizhu.setBackgroundResource(R.drawable.btn_click);
-            holder.id.setText(position+"."+result.getProductCode());
+            holder.id.setText(position + "." + result.getProductCode());
             holder.name.setText(result.getProductName());
-        }else if(result.getInventoryResult().equals("盘盈")){
-            holder.image.setBackground(ContextCompat.getDrawable(mContext,R.drawable.text_more));
+        } else if (result.getInventoryResult().equals("盘盈")) {
+            holder.image.setBackground(ContextCompat.getDrawable(mContext, R.drawable.text_more));
             holder.image.setText("多");
             holder.bgBeizhu.setBackgroundResource(R.drawable.btn_click_more);
-            holder.id.setText(position+"."+result.getProductCode());
+            holder.id.setText(position + "." + result.getProductCode());
             holder.name.setText(result.getProductName());
         }
         holder.bgBeizhu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onClick(position);
+                }
 
             }
         });
@@ -92,13 +96,23 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
         }
     }
 
+    public interface OnItemClickListener {
+        void onClick(int position);
+
+        void onLongClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
+    }
+
     /**
      * @param context
-     * @param b                     确定按钮的颜色  false 为红色  true为蓝色
-     * @param titles                对话框的内容
-     * @param commitStr             确定按钮的显示内容
-     *                              //     * @param onClickListenerCancle  取消按钮的点击事件
-     * @return   带Editetext dialog
+     * @param b         确定按钮的颜色  false 为红色  true为蓝色
+     * @param titles    对话框的内容
+     * @param commitStr 确定按钮的显示内容
+     *                  //     * @param onClickListenerCancle  取消按钮的点击事件
+     * @return 带Editetext dialog
      */
     public AlertDialog showDialogsByCause(final Context context, boolean b, String titles, String
             commitStr, final int czzt, final String str) {
@@ -111,7 +125,7 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
 
         LinearLayout layout = (LinearLayout) views.findViewById(R.id.layout);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
-        params.setMargins(60,0,60,0);
+        params.setMargins(60, 0, 60, 0);
         layout.setLayoutParams(params);
 
         alertDialog.show();
@@ -139,7 +153,7 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
         commitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    //执行操作
+                //执行操作
 //                    cause = content_et.getText().toString();
             }
         });

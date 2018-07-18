@@ -32,6 +32,7 @@
             android:text="进行盘点" />
 
         <TextView
+            android:visibility="invisible"
             android:id="@+id/upload"
             android:layout_width="match_parent"
             android:layout_height="80dp"
