@@ -39,6 +39,7 @@ public class MyApplication extends MultiDexApplication {
 
     public static int time = 30;
     private static String version;
+    private Context context;
     /**
      * 程序启动时的处理
      *
@@ -48,6 +49,7 @@ public class MyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         mApplication = this;
+        context = this;
         mActivityList = new ArrayList<Activity>();
         initData();
         // 在使用 SDK 各组间之前初始化 context 信息，传入 ApplicationContext

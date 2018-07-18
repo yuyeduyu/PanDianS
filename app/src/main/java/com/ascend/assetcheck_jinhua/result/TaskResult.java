@@ -143,4 +143,14 @@ public class TaskResult implements Serializable{
     public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TaskResult){
+            TaskResult result = (TaskResult) obj;
+            return this.taskId==result.taskId;
+        }
+
+        return super.equals(obj);
+    }
 }

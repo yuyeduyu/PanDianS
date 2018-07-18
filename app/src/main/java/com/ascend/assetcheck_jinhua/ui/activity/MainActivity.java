@@ -112,18 +112,16 @@ public class MainActivity extends BaseActivity {
                         if (data.getResultCode().equals("200")) {
                             if (data.getJsonObject()!=null&&data.getJsonObject().size()>0){
                                 LoadTaskDatas = data.getJsonObject();
-                            }else if (data.getResultCode().equals("404")){
-                                //登录信息失效
-                                Toast.makeText(mBaseActivity,"登录过期，重新登录中",Toast.LENGTH_SHORT).show();
-                                AppClient.Login(mBaseActivity,
-                                        SharedPreferencesUtil.getString(mBaseActivity,"phone"),
-                                        SharedPreferencesUtil.getString(mBaseActivity,"psw"));
                             }else {
                                 Toast.makeText(MainActivity.this,"没有可下载的盘点任务",Toast.LENGTH_SHORT).show();
                             }
 
-                        }else {
-                            Toast.makeText(MainActivity.this,"连接服务器失败",Toast.LENGTH_SHORT).show();
+                        }else if (data.getResultCode().equals("404")){
+                            //登录信息失效
+                            Toast.makeText(mBaseActivity,"登录过期，重新登录中",Toast.LENGTH_SHORT).show();
+                            AppClient.Login(mBaseActivity,
+                                    SharedPreferencesUtil.getString(mBaseActivity,"phone"),
+                                    SharedPreferencesUtil.getString(mBaseActivity,"psw"));
                         }
                     }
                 });

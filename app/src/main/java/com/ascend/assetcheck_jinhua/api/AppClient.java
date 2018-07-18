@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ascend.assetcheck_jinhua.Config;
+import com.ascend.assetcheck_jinhua.MyApplication;
 import com.ascend.assetcheck_jinhua.base.BaseActivity;
 import com.ascend.assetcheck_jinhua.ui.activity.LoginActivity;
 import com.ascend.assetcheck_jinhua.ui.activity.MainActivity;
@@ -31,50 +32,54 @@ import rx.schedulers.Schedulers;
 
 public class AppClient {
     ///assets/appHandheldMachine/getTask.do
-    private static final String url = Config.BASEURL + "/assets/appHandheldMachine/";
+    private static String url =  "http://"+SharedPreferencesUtil.getString(MyApplication.getInstance(), "ip","183.146.254.204")
+            +":"+SharedPreferencesUtil.getString(MyApplication.getInstance(),"port","7810") + "/assets/appHandheldMachine/";
     private static Retrofit retrofit;
-    private static LockApi lockApi;
-
+    private Context context;
     public static LockApi getLockApi(Context context) {
-        if (lockApi == null) {
-            synchronized (AppClient.class) {
-                //session
-                ClearableCookieJar cookieJar =
-                        new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
-                OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                        .connectTimeout(10, TimeUnit.SECONDS)
-                        .cookieJar(cookieJar);
-                OkHttpClient client = builder.build();
-
-                retrofit = new Retrofit.Builder()
-                        .client(client)
-                        .baseUrl(url)
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                lockApi = retrofit.create(LockApi.class);
-                Log.e("url:", url);
-            }
-        }
-        return lockApi;
+        return Build.lockApi;
     }
+    public static void resetLocalApi(Context context) {
+         String url =  "http://"+SharedPreferencesUtil.getString(MyApplication.getInstance(), "ip","183.146.254.204")
+                +":"+SharedPreferencesUtil.getString(MyApplication.getInstance(),"port","7810") + "/assets/appHandheldMachine/";
 
-    public static LockApi getLockApi(String urlPath) {
-        if (lockApi == null) {
-            synchronized (AppClient.class) {
-                OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                        .connectTimeout(10, TimeUnit.SECONDS);
-                OkHttpClient client = builder.build();
-                retrofit = new Retrofit.Builder()
-                        .client(client)
-                        .baseUrl(urlPath)
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                lockApi = retrofit.create(LockApi.class);
-            }
+        //session
+        ClearableCookieJar cookieJar =
+                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .cookieJar(cookieJar);
+        OkHttpClient client = builder.build();
+
+        retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(url)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Log.e("url:",url);
+        Build.lockApi = retrofit.create(LockApi.class);
+    }
+    private static class Build {
+        private static LockApi lockApi;
+        static {
+            //session
+            ClearableCookieJar cookieJar =
+                    new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(MyApplication.getInstance()));
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .cookieJar(cookieJar);
+            OkHttpClient client = builder.build();
+
+            retrofit = new Retrofit.Builder()
+                    .client(client)
+                    .baseUrl(url)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            Log.e("url:",url);
+            lockApi = retrofit.create(LockApi.class);
         }
-        return lockApi;
     }
     public  static void  Login(final BaseActivity mBaseActivity, final String phone, final String psw) {
         mBaseActivity.showDialog(true);

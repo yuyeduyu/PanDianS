@@ -25,7 +25,7 @@ public interface LockApi {
 //    @POST("")
 //    Observable<HttpResponseByDescBean> SynchroData(@FieldMap Map<String, Object> map);
 //
-    //锁控制
+    //登录
     @FormUrlEncoded
     @POST("login.do")
     Observable<BaseResult> Login(@Field("userName") String userName, @Field("userPassword") String userPassword);
