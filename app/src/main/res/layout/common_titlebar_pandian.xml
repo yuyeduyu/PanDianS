@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@color/app_style_blue">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="进行盘点"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:padding="16dp"
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/arrow_left"/>
+
+    <Button
+        android:id="@+id/bg_finish"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="40dp"
+        android:padding="5dp"
+        android:background="@drawable/btn_click"
+        android:textColor="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="完成盘点"/>
+</RelativeLayout>

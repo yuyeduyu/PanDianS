@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/common_titlebar_pandian" />
+
+        <include layout="@layout/content_start_pandian" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/scan"
+        app:backgroundTint="@color/text_blue2"
+        app:elevation="8dp"
+        app:rippleColor="#e7d161" />
+
+</android.support.design.widget.CoordinatorLayout>
+
+
