@@ -80,6 +80,7 @@ public class StartPandianActivity extends BaseActivity {
     private List<TaskResult> allDatas = new ArrayList<>();//服务器待盘点所有数据
     private TaskResult data;
 
+    private List<TaskResult> scanDatas = new ArrayList<>();//扫描返回数据
     //扫描初始化需要对象
     private int MESSAGE_SUCCESS = 0;
     private int MESSAGE_FAIL = 1;
@@ -92,6 +93,7 @@ public class StartPandianActivity extends BaseActivity {
     private static final int SCAN_INTERVAL = 5;
 
     private static final int MSG_UPDATE_LISTVIEW = 0;
+    private static final int UPDATEUI = 101;
     private static final int MODE_18000 = 1;
     private static boolean Scanflag = false;
     int selectedEd = 0;
@@ -123,18 +125,20 @@ public class StartPandianActivity extends BaseActivity {
             dataHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
-                    if (isCanceled)
-                        return;
                     switch (msg.what) {
                         case MSG_UPDATE_LISTVIEW:
+                            if (isCanceled)
+                                return;
                             totalDatas.clear();
                             abnormalDatas.clear();
                             List<UHfData.InventoryTagMap> back = UHfData.lsTagList;
-                            for (int i = 0; i < allDatas.size(); i++) {
-                                allDatas.get(i).setActualQuantity(1);
-                                allDatas.get(i).setDifferenceNum(allDatas.get(i).getInventoryNum() - allDatas.get(i).getActualQuantity());
-                                for (int j = 0; j < back.size(); j++) {
+                            for (int j = 0; j < back.size(); j++) {
+                              boolean has = false;
+                                for (int i = 0; i < allDatas.size(); i++) {
                                     if (allDatas.get(i).getProductCode().equals(back.get(j).strEPC)) {
+                                        has =true;
+                                        allDatas.get(i).setActualQuantity(1);
+                                        allDatas.get(i).setDifferenceNum(allDatas.get(i).getInventoryNum() - allDatas.get(i).getActualQuantity());
                                         if (allDatas.get(i).getInventoryNum() == allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("相符");
                                             totalDatas.add(allDatas.get(i));
@@ -147,10 +151,23 @@ public class StartPandianActivity extends BaseActivity {
                                         }
                                     }
                                 }
+                                if (!has){
+                                    TaskResult result = new TaskResult();
+                                    result.setTaskId(Integer.valueOf(data.getId()));
+                                    result.setProductCode(back.get(j).strEPC);
+                                    result.setActualQuantity(1);
+                                    result.setInventoryResult("盘盈");
+                                    allDatas.add(result);
+                                    abnormalDatas.add(result);
+                                }
                             }
-                            num.setText("总数:"+(abnormalDatas.size()+totalDatas.size()));
+                            num.setText("总数:" + (abnormalDatas.size() + totalDatas.size()));
                             abnormalAdapter.notifyDataSetChanged();
                             totalAdapter.notifyDataSetChanged();
+                            break;
+                        case UPDATEUI:
+                            //更新盘点数量
+                            num.setText("总数:" + (abnormalDatas.size() + totalDatas.size()));
                             break;
                         default:
                             break;
@@ -218,7 +235,7 @@ public class StartPandianActivity extends BaseActivity {
 
                         } else if (back.getResultCode().equals("404")) {
                             //登录信息失效
-                            Toast.makeText(mBaseActivity, "登录过期，重新登录中", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(mBaseActivity, "登录过期，重新登录中", Toast.LENGTH_SHORT).show();
                             AppClient.Login(mBaseActivity,
                                     SharedPreferencesUtil.getString(mBaseActivity, "phone"),
                                     SharedPreferencesUtil.getString(mBaseActivity, "psw"));
@@ -247,7 +264,7 @@ public class StartPandianActivity extends BaseActivity {
         abnormalAdapter.setOnItemClickListener(new AbnormalAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                showDialogsByCause(StartPandianActivity.this,true,"备注","确定",position);
+                showDialogsByCause(StartPandianActivity.this, true, "备注", "确定", position);
             }
 
             @Override
@@ -264,13 +281,21 @@ public class StartPandianActivity extends BaseActivity {
                 break;
             case R.id.bg_finish:
                 //完成盘点
-                for (TaskResult result : allDatas) {
-                    if (result.getInventoryResult() == null) {
-                        showNormalDialog();
-                        return;
-                    }
+                //查询是否有未盘点到设备
+                List<TaskResult> results = new ArrayList<>();
+                results.addAll(allDatas);
+                results.removeAll(totalDatas);
+                results.removeAll(abnormalDatas);
+                if (results.size() > 0) {
+                    showNormalDialog(results.size(), results);
+                    return;
                 }
-
+                TaskResult result = new TaskResult();
+                result.setTaskId(Integer.valueOf(data.getId()));
+                result.setProductCode("测试下好不好");
+                result.setActualQuantity(1);
+                result.setInventoryResult("盘盈");
+                allDatas.add(result);
                 commitData();
                 break;
             case R.id.total:
@@ -344,11 +369,11 @@ public class StartPandianActivity extends BaseActivity {
                         if (!back.getResultCode().equals("404")) {
 
                             Toast.makeText(mBaseActivity, back.getResultCode() + ":" + back.getMessage(), Toast.LENGTH_SHORT).show();
-                            EventBus.getDefault().post(new MessageEvent(data.getTaskId()));
+                            EventBus.getDefault().post(data);
                             finish();
                         } else if (back.getResultCode().equals("404")) {
                             //登录信息失效
-                            Toast.makeText(mBaseActivity, "登录过期，重新登录中", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(mBaseActivity, "登录过期，重新登录中", Toast.LENGTH_SHORT).show();
                             AppClient.Login(mBaseActivity,
                                     SharedPreferencesUtil.getString(mBaseActivity, "phone"),
                                     SharedPreferencesUtil.getString(mBaseActivity, "psw"));
@@ -404,6 +429,7 @@ public class StartPandianActivity extends BaseActivity {
             }
         }
         str.append("]],\"message\":\"成功!\",\"resultCode\":200}");
+
         Log.e("str", str.toString());
         return str.toString();
     }
@@ -503,7 +529,7 @@ public class StartPandianActivity extends BaseActivity {
         }
     }
 
-    private void showNormalDialog() {
+    private void showNormalDialog(int size, final List<TaskResult> results) {
         /* @setIcon 设置对话框图标
          * @setTitle 设置对话框标题
          * @setMessage 设置对话框消息提示
@@ -512,19 +538,18 @@ public class StartPandianActivity extends BaseActivity {
         final AlertDialog.Builder normalDialog =
                 new AlertDialog.Builder(StartPandianActivity.this);
         normalDialog.setTitle("异常提醒");
-        normalDialog.setMessage("存在未盘点的设备，是否设置为异常");
+        normalDialog.setMessage("存在 " + size + " 个设备未盘点，是否设置为异常");
         normalDialog.setPositiveButton("确定",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //...To-do
-                        for (int i = 0; i > allDatas.size(); i++) {
-                            if (allDatas.get(i).getInventoryResult() == null) {
-                                allDatas.get(i).setInventoryResult("盘亏");
-                                abnormalDatas.add(allDatas.get(i));
-                            }
-                            abnormalAdapter.notifyDataSetChanged();
+                        for (int i = 0; i < results.size(); i++) {
+                            results.get(i).setInventoryResult("盘亏");
+                            abnormalDatas.add(results.get(i));
                         }
+                        dataHandler.sendEmptyMessage(UPDATEUI);
+                        abnormalAdapter.notifyDataSetChanged();
                     }
                 });
         normalDialog.setNegativeButton("关闭",
@@ -586,12 +611,13 @@ public class StartPandianActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //执行操作
-                    abnormalDatas.get(pos).setRemark(content_et.getText().toString());
-                    for (int i=0;i<allDatas.size();i++){
-                        if (allDatas.get(i).getId().equals(abnormalDatas.get(pos).getId())){
-                            allDatas.get(i).setRemark(content_et.getText().toString());
-                        }
+                abnormalDatas.get(pos).setRemark(content_et.getText().toString());
+                for (int i = 0; i < allDatas.size(); i++) {
+                    if (allDatas.get(i).getId().equals(abnormalDatas.get(pos).getId())) {
+                        allDatas.get(i).setRemark(content_et.getText().toString());
                     }
+                }
+                alertDialog.dismiss();
             }
         });
         window.setContentView(views);

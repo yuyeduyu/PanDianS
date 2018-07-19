@@ -55,13 +55,13 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
             holder.image.setBackground(ContextCompat.getDrawable(mContext, R.drawable.text_lost));
             holder.image.setText("少");
             holder.bgBeizhu.setBackgroundResource(R.drawable.btn_click);
-            holder.id.setText(position + "." + result.getProductCode());
+            holder.id.setText(position+1 + "." + result.getProductCode());
             holder.name.setText(result.getProductName());
         } else if (result.getInventoryResult().equals("盘盈")) {
             holder.image.setBackground(ContextCompat.getDrawable(mContext, R.drawable.text_more));
             holder.image.setText("多");
             holder.bgBeizhu.setBackgroundResource(R.drawable.btn_click_more);
-            holder.id.setText(position + "." + result.getProductCode());
+            holder.id.setText(position +1+ "." + result.getProductCode());
             holder.name.setText(result.getProductName());
         }
         holder.bgBeizhu.setOnClickListener(new View.OnClickListener() {

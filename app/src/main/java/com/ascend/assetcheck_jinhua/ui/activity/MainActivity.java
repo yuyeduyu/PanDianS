@@ -16,6 +16,10 @@ import com.ascend.assetcheck_jinhua.result.LoadResultBack;
 import com.ascend.assetcheck_jinhua.result.TaskResult;
 import com.ascend.assetcheck_jinhua.utils.SharedPreferencesUtil;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,13 @@ public class MainActivity extends BaseActivity {
     TextView upload;
 
     private List<TaskResult> LoadTaskDatas = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
     @Override
     protected void findViews(Bundle savedInstanceState) {
         super.findViews(savedInstanceState);
@@ -118,12 +129,23 @@ public class MainActivity extends BaseActivity {
 
                         }else if (data.getResultCode().equals("404")){
                             //登录信息失效
-                            Toast.makeText(mBaseActivity,"登录过期，重新登录中",Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(mBaseActivity,"登录过期，重新登录中",Toast.LENGTH_SHORT).show();
                             AppClient.Login(mBaseActivity,
                                     SharedPreferencesUtil.getString(mBaseActivity,"phone"),
                                     SharedPreferencesUtil.getString(mBaseActivity,"psw"));
                         }
                     }
                 });
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void Event(TaskResult result) {
+        LoadTaskDatas.remove(result);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
     }
 }

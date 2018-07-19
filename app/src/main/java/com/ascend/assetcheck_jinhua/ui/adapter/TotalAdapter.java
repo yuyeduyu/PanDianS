@@ -43,7 +43,7 @@ public class TotalAdapter extends RecyclerView.Adapter<TotalAdapter.Holder> {
     @Override
     public void onBindViewHolder(Holder holder, final int position) {
         TaskResult result = datas.get(position);
-        holder.id.setText(position + "." + result.getProductCode());
+        holder.id.setText(position+1 + "." + result.getProductCode());
         holder.name.setText(result.getProductName());
     }
 

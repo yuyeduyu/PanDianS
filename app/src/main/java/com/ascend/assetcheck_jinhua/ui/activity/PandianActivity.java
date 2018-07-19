@@ -23,6 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -108,13 +109,9 @@ public class PandianActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(MessageEvent messageEvent) {
-        for (TaskResult result : waitDatas) {
-            if (result.getTaskId() == messageEvent.getMessage()) {
-                waitDatas.remove(result);
-                completeDatas.add(result);
-            }
-        }
+    public void Event(TaskResult result) {
+        waitDatas.remove(result);
+        completeDatas.add(result);
         waitAdapter.notifyDataSetChanged();
         completeAdapter.notifyDataSetChanged();
     }
