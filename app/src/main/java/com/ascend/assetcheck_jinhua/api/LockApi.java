@@ -2,9 +2,11 @@ package com.ascend.assetcheck_jinhua.api;
 
 import com.ascend.assetcheck_jinhua.result.LoadResultBack;
 import com.ascend.assetcheck_jinhua.result.getLoadTaskResultBack;
+import com.ascend.assetcheck_jinhua.result.getTaskRangeResltback;
 import com.ascend.assetcheck_jinhua.result.upLoadResult;
 
 import java.util.Map;
+
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -20,11 +22,7 @@ import rx.Observable;
  */
 
 public interface LockApi {
-//    //房源同步接口
-//    @FormUrlEncoded
-//    @POST("")
-//    Observable<HttpResponseByDescBean> SynchroData(@FieldMap Map<String, Object> map);
-//
+
     //登录
     @FormUrlEncoded
     @POST("login.do")
@@ -34,10 +32,16 @@ public interface LockApi {
     @POST("getTask.do")
     Observable<LoadResultBack> getLoadTask();
 
-  // 盘点
-  @FormUrlEncoded
+    // 盘点
+    @FormUrlEncoded
     @POST("downloadTask.do")
     Observable<getLoadTaskResultBack> downloadTask(@Field("id") String id);
+
+    // 获取盘点区域
+//    http://183.146.251.250:7810/assets/appHandheldMachine/getTaskRange.do
+    @FormUrlEncoded
+    @POST("getTaskRange.do")
+    Observable<getTaskRangeResltback> getTaskRange(@Field("id") String id);
     // 上传盘点数据
     @FormUrlEncoded
     @POST("uploadAppResult.do")

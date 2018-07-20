@@ -278,6 +278,7 @@ public class StartPandianActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.back:
+                finish();
                 break;
             case R.id.bg_finish:
                 //完成盘点
@@ -290,12 +291,6 @@ public class StartPandianActivity extends BaseActivity {
                     showNormalDialog(results.size(), results);
                     return;
                 }
-                TaskResult result = new TaskResult();
-                result.setTaskId(Integer.valueOf(data.getId()));
-                result.setProductCode("测试下好不好");
-                result.setActualQuantity(1);
-                result.setInventoryResult("盘盈");
-                allDatas.add(result);
                 commitData();
                 break;
             case R.id.total:
