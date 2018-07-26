@@ -24,9 +24,9 @@ import butterknife.ButterKnife;
 public class CompleteAdapter extends RecyclerView.Adapter<CompleteAdapter.Holder> {
 
     private Context mContext;
-    private List<TaskResult> datas;
+    private List<String> datas;
 
-    public CompleteAdapter(Context context, List<TaskResult> datas) {
+    public CompleteAdapter(Context context, List<String> datas) {
         mContext = context;
         this.datas = datas;
     }
@@ -44,7 +44,7 @@ public class CompleteAdapter extends RecyclerView.Adapter<CompleteAdapter.Holder
             holder.area.setText("盘点区域");
 
         }else {
-            holder.area.setText(datas.get(position-1).getTask_name());
+            holder.area.setText(datas.get(position-1));
             holder.area.setBackgroundResource(R.color.white);
         }
     }

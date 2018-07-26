@@ -84,7 +84,7 @@ public class LoginActivity extends BaseActivity {
                                 Toast.makeText(mBaseActivity, "证书出错", Toast.LENGTH_SHORT).show();
                                 break;
                             case ExceptionHandle.ERROR.UNKNOWN:
-                                Toast.makeText(mBaseActivity, "未知错误", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mBaseActivity, "连接服务器失败", Toast.LENGTH_SHORT).show();
                                 break;
                             case ExceptionHandle.ERROR.PARSE_ERROR:
                                 Toast.makeText(mBaseActivity, "解析错误", Toast.LENGTH_SHORT).show();

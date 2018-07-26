@@ -14,18 +14,16 @@
         <include layout="@layout/content_start_pandian" />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <Button
         android:id="@+id/fab"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="60dp"
         android:layout_marginRight="20dp"
-        android:scaleType="fitXY"
-        android:src="@mipmap/scan"
-        app:backgroundTint="@color/text_blue2"
-        app:elevation="8dp"
-        app:rippleColor="#e7d161" />
+        android:background="@drawable/circle"
+        android:text="扫描"
+     />
 
 </android.support.design.widget.CoordinatorLayout>
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.ascend.assetcheck_jinhua.R;
 import com.ascend.assetcheck_jinhua.result.LoadResultBack;
 import com.ascend.assetcheck_jinhua.result.TaskResult;
+import com.ascend.assetcheck_jinhua.result.getTaskRangeResltback;
 import com.ascend.assetcheck_jinhua.ui.activity.StartPandianActivity;
 
 import java.util.List;
@@ -27,11 +28,12 @@ import butterknife.ButterKnife;
 public class WaitAdapter extends RecyclerView.Adapter<WaitAdapter.Holder> {
 
     private Context mContext;
-    private List<TaskResult> datas;
-
-    public WaitAdapter(Context context, List<TaskResult> datas) {
+    private List<String> datas;
+    private String taskId;
+    public WaitAdapter(Context context, List<String> datas,String taskId) {
         mContext = context;
         this.datas = datas;
+        this.taskId = taskId;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class WaitAdapter extends RecyclerView.Adapter<WaitAdapter.Holder> {
             holder.area.setText("盘点区域");
             holder.pandian.setText("操作");
         }else {
-            holder.area.setText(datas.get(position-1).getTask_name());
+            holder.area.setText(datas.get(position-1));
             holder.area.setBackgroundResource(R.color.white);
             holder.pandian.setBackgroundResource(R.color.white);
             holder.pandian.setTextColor(ContextCompat.getColor(mContext,R.color.button_blue));
@@ -60,6 +62,7 @@ public class WaitAdapter extends RecyclerView.Adapter<WaitAdapter.Holder> {
                     //开始盘点
                     Intent intent = new Intent(mContext, StartPandianActivity.class);
                     intent.putExtra("data",datas.get(position-1));
+                    intent.putExtra("taskId",taskId);
                     mContext.startActivity(intent);
                 }
             });

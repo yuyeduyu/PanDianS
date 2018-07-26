@@ -11,13 +11,13 @@ import java.util.List;
 
 public class getLoadTaskResultBack extends BaseResult {
 
-    private List< List<TaskResult>> jsonObject;
+    private List<TaskResult> jsonObject;
 
-    public List<List<TaskResult>> getJsonObject() {
+    public List<TaskResult> getJsonObject() {
         return jsonObject;
     }
 
-    public void setJsonObject(List<List<TaskResult>> jsonObject) {
+    public void setJsonObject(List<TaskResult> jsonObject) {
         this.jsonObject = jsonObject;
     }
 /*    public class getLoadTaskResult {

@@ -70,7 +70,6 @@ public class AbnormalAdapter extends RecyclerView.Adapter<AbnormalAdapter.Holder
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onClick(position);
                 }
-
             }
         });
     }

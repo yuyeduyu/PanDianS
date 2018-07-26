@@ -148,9 +148,14 @@ public class TaskResult implements Serializable{
     public boolean equals(Object obj) {
         if (obj instanceof TaskResult){
             TaskResult result = (TaskResult) obj;
-            return this.taskId==result.taskId;
+            return this.productCode==result.productCode;
         }
 
         return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return this.task_name+"  "+this.productCode+ "  "+this.receivePlace;
     }
 }

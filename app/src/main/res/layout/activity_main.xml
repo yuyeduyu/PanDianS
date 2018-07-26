@@ -10,6 +10,7 @@
     <include layout="@layout/common_titlebar_layout" />
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -32,14 +33,18 @@
             android:text="进行盘点" />
 
         <TextView
-            android:visibility="invisible"
             android:id="@+id/upload"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="@drawable/cardshape"
             android:gravity="center"
-            android:text="上传盘点结果" />
+            android:text="上传盘点结果"
+            android:visibility="invisible" />
 
     </LinearLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

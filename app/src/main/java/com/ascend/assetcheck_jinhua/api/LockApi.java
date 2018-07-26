@@ -1,6 +1,7 @@
 package com.ascend.assetcheck_jinhua.api;
 
 import com.ascend.assetcheck_jinhua.result.LoadResultBack;
+import com.ascend.assetcheck_jinhua.result.TaskBack;
 import com.ascend.assetcheck_jinhua.result.getLoadTaskResultBack;
 import com.ascend.assetcheck_jinhua.result.getTaskRangeResltback;
 import com.ascend.assetcheck_jinhua.result.upLoadResult;
@@ -30,12 +31,12 @@ public interface LockApi {
 
     // 下载盘点任务
     @POST("getTask.do")
-    Observable<LoadResultBack> getLoadTask();
+    Observable<TaskBack> getLoadTask();
 
     // 盘点
     @FormUrlEncoded
     @POST("downloadTask.do")
-    Observable<getLoadTaskResultBack> downloadTask(@Field("id") String id);
+    Observable<getLoadTaskResultBack> downloadTask(@Field("id") String id,@Field("receivePlace") String receivePlace);
 
     // 获取盘点区域
 //    http://183.146.251.250:7810/assets/appHandheldMachine/getTaskRange.do
