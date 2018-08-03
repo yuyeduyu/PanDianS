@@ -22,6 +22,7 @@ import com.ascend.assetcheck_jinhua.ui.adapter.CompleteAdapter;
 import com.ascend.assetcheck_jinhua.ui.adapter.TaskAdapter;
 import com.ascend.assetcheck_jinhua.ui.adapter.WaitAdapter;
 import com.ascend.assetcheck_jinhua.utils.SharedPreferencesUtil;
+import com.ascend.assetcheck_jinhua.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

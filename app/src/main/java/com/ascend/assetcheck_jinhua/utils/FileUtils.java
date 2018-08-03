@@ -1,5 +1,7 @@
 package com.ascend.assetcheck_jinhua.utils;
 
+import android.os.Environment;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -7,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * 文件处理工具
@@ -226,6 +229,37 @@ public class FileUtils {
                     tempFile.delete();
                 }
             }
+        }
+    }
+
+    /**
+     * 追加内容到sd卡
+     * @author lish
+     * created at 2018-08-03 14:29
+     */
+    public static void write(String content) {
+        try {
+            //判断实际是否有SD卡，且应用程序是否有读写SD卡的能力，有则返回true
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                // 获取SD卡的目录
+                File sdCardDir = Environment.getExternalStorageDirectory();
+                String path = "/资产盘点/";
+                File dir = new File(sdCardDir + path);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File targetFile = new File(sdCardDir.getCanonicalPath() + path + "data.txt");
+                //使用RandomAccessFile是在原有的文件基础之上追加内容，
+                //而使用outputstream则是要先清空内容再写入
+                RandomAccessFile raf = new RandomAccessFile(targetFile, "rw");
+                //光标移到原始文件最后，再执行写入
+                raf.seek(targetFile.length());
+                raf.write(content.getBytes());
+                raf.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -36,7 +36,9 @@ import com.ascend.assetcheck_jinhua.result.getLoadTaskResultBack;
 import com.ascend.assetcheck_jinhua.result.upLoadResult;
 import com.ascend.assetcheck_jinhua.ui.adapter.AbnormalAdapter;
 import com.ascend.assetcheck_jinhua.ui.adapter.TotalAdapter;
+import com.ascend.assetcheck_jinhua.utils.FileUtils;
 import com.ascend.assetcheck_jinhua.utils.SharedPreferencesUtil;
+import com.ascend.assetcheck_jinhua.utils.StringUtils;
 import com.uhf.scanlable.UHfData;
 
 import org.greenrobot.eventbus.EventBus;
@@ -140,31 +142,52 @@ public class StartPandianActivity extends BaseActivity {
                             for (int j = 0; j < back.size(); j++) {
                                 boolean has = false;
                                 for (int i = 0; i < allDatas.size(); i++) {
-                                    if (allDatas.get(i).getProductCode().equals(back.get(j).strEPC)) {
+                                    StringBuffer buffer = new StringBuffer();
+                                    buffer.append(i+":"+allDatas.get(i).getProductCode()+"  ");
+                                    if (allDatas.get(i).getProductCode().trim()
+                                            .equals(String.valueOf(StringUtils.convertHexToString(back.get(j).strEPC.trim())))) {
                                         has = true;
+                                        buffer.append(StringUtils.convertHexToString(back.get(j).strEPC.trim()));
                                         allDatas.get(i).setActualQuantity(1);
                                         allDatas.get(i).setDifferenceNum(allDatas.get(i).getInventoryNum() - allDatas.get(i).getActualQuantity());
                                         if (allDatas.get(i).getInventoryNum() == allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("相符");
                                             totalDatas.add(allDatas.get(i));
+                                            buffer.append("  相符\r\n");
                                         } else if (allDatas.get(i).getInventoryNum() > allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("盘亏");
                                             abnormalDatas.add(allDatas.get(i));
+                                            buffer.append("  盘亏\r\n");
                                         } else if (allDatas.get(i).getInventoryNum() < allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("盘盈");
                                             abnormalDatas.add(allDatas.get(i));
+                                            buffer.append("   InventoryNum"+allDatas.get(i).getInventoryNum()+"   ActualQuantity()"
+                                                    +allDatas.get(i).getActualQuantity()+"  盘盈\r\n");
                                         }
                                     }
+                                    buffer.append("\r\n");
+                                    buffer.append("\r\n");
+                                    buffer.append("\r\n");
+                                    FileUtils.write(buffer.toString());
                                 }
                                 if (!has) {
                                     TaskResult result = new TaskResult();
                                     result.setTaskId(Integer.valueOf(taskId));
-                                    result.setProductCode(back.get(j).strEPC);
+                                    result.setProductCode(StringUtils.convertHexToString(back.get(j).strEPC.trim()));
                                     result.setReceivePlace(taskRange);
                                     result.setActualQuantity(1);
                                     result.setInventoryResult("盘盈");
                                     allDatas.add(result);
                                     abnormalDatas.add(result);
+                                    StringBuffer buffer = new StringBuffer();
+                                    for (int i=0;i<allDatas.size();i++){
+                                        buffer.append(i+":"+allDatas.get(i).getProductCode()+"  ");
+                                    }
+                                    buffer.append("扫描数据:"+StringUtils.convertHexToString(back.get(j).strEPC.trim())+"  异常，盘盈\r\n");
+                                    buffer.append("\r\n");
+                                    buffer.append("\r\n");
+                                    buffer.append("\r\n");
+                                    FileUtils.write(buffer.toString());
                                 }
                             }
                             num.setText("总数:" + (abnormalDatas.size() + totalDatas.size()));
@@ -589,8 +612,8 @@ public class StartPandianActivity extends BaseActivity {
      */
     private void fabClick() {
 
-        addTestData();
-/*        try {
+//        addTestData();
+        try {
             if (timer == null) {
                 if (totalAdapter != null) {
                     UHfData.lsTagList.clear();
@@ -629,7 +652,7 @@ public class StartPandianActivity extends BaseActivity {
                 fab.setBackgroundResource(R.drawable.circle);
             }
         } catch (Exception e) {
-        }*/
+        }
     }
 
     private void showNormalDialog(int size, final List<TaskResult> results) {

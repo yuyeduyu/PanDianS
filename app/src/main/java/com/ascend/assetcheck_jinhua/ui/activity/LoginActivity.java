@@ -1,9 +1,12 @@
 package com.ascend.assetcheck_jinhua.ui.activity;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +23,7 @@ import com.ascend.assetcheck_jinhua.api.ExceptionHandle;
 import com.ascend.assetcheck_jinhua.api.MySubscriber;
 import com.ascend.assetcheck_jinhua.base.BaseActivity;
 import com.ascend.assetcheck_jinhua.utils.SharedPreferencesUtil;
+import com.ascend.assetcheck_jinhua.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +53,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void initViews() {
         super.initViews();
+        verifyStoragePermissions(this);
         phone.setText(SharedPreferencesUtil.getString(mBaseActivity, "phone", ""));
         psw.setText(SharedPreferencesUtil.getString(mBaseActivity, "psw", ""));
 
@@ -149,6 +154,26 @@ public class LoginActivity extends BaseActivity {
             }
         }
         return super.onTouchEvent(event);
+    }
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE"};
+
+    public static void verifyStoragePermissions(Activity activity) {
+
+        try {
+            //检测是否有写的权限
+            int permission = ActivityCompat.checkSelfPermission(activity,
+                    "android.permission.WRITE_EXTERNAL_STORAGE");
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                // 没有写的权限，去申请写的权限，会弹出对话框
+                ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
