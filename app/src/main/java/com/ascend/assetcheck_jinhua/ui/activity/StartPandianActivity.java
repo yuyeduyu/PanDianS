@@ -168,15 +168,6 @@ public class StartPandianActivity extends BaseActivity {
                                     result.setInventoryResult("盘盈");
                                     allDatas.add(result);
                                     abnormalDatas.add(result);
-                                    StringBuffer buffer = new StringBuffer();
-                                    for (int i=0;i<allDatas.size();i++){
-                                        buffer.append(i+":"+allDatas.get(i).getProductCode()+"  ");
-                                    }
-                                    buffer.append("扫描数据:"+StringUtils.convertHexToString(back.get(j).strEPC.trim())+"  异常，盘盈\r\n");
-                                    buffer.append("\r\n");
-                                    buffer.append("\r\n");
-                                    buffer.append("\r\n");
-                                    FileUtils.write(buffer.toString());
                                 }
                             }
                             num.setText("总数:" + (abnormalDatas.size() + totalDatas.size()));
