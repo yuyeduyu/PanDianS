@@ -142,33 +142,22 @@ public class StartPandianActivity extends BaseActivity {
                             for (int j = 0; j < back.size(); j++) {
                                 boolean has = false;
                                 for (int i = 0; i < allDatas.size(); i++) {
-                                    StringBuffer buffer = new StringBuffer();
-                                    buffer.append(i+":"+allDatas.get(i).getProductCode()+"  ");
-                                    if (allDatas.get(i).getProductCode().trim()
-                                            .equals(String.valueOf(StringUtils.convertHexToString(back.get(j).strEPC.trim())))) {
+                                    if (StringUtils.convertHexToString(back.get(j).strEPC.trim())
+                                            .indexOf( allDatas.get(i).getProductCode().trim())!=-1) {
                                         has = true;
-                                        buffer.append(StringUtils.convertHexToString(back.get(j).strEPC.trim()));
                                         allDatas.get(i).setActualQuantity(1);
-                                        allDatas.get(i).setDifferenceNum(allDatas.get(i).getInventoryNum() - allDatas.get(i).getActualQuantity());
+                                        allDatas.get(i).setDifferenceNum(allDatas.get(i).getActualQuantity() - allDatas.get(i).getInventoryNum());
                                         if (allDatas.get(i).getInventoryNum() == allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("相符");
                                             totalDatas.add(allDatas.get(i));
-                                            buffer.append("  相符\r\n");
                                         } else if (allDatas.get(i).getInventoryNum() > allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("盘亏");
                                             abnormalDatas.add(allDatas.get(i));
-                                            buffer.append("  盘亏\r\n");
                                         } else if (allDatas.get(i).getInventoryNum() < allDatas.get(i).getActualQuantity()) {
                                             allDatas.get(i).setInventoryResult("盘盈");
                                             abnormalDatas.add(allDatas.get(i));
-                                            buffer.append("   InventoryNum"+allDatas.get(i).getInventoryNum()+"   ActualQuantity()"
-                                                    +allDatas.get(i).getActualQuantity()+"  盘盈\r\n");
                                         }
                                     }
-                                    buffer.append("\r\n");
-                                    buffer.append("\r\n");
-                                    buffer.append("\r\n");
-                                    FileUtils.write(buffer.toString());
                                 }
                                 if (!has) {
                                     TaskResult result = new TaskResult();
@@ -408,7 +397,7 @@ public class StartPandianActivity extends BaseActivity {
         final AlertDialog.Builder normalDialog =
                 new AlertDialog.Builder(StartPandianActivity.this);
         normalDialog.setTitle("完成盘点");
-        normalDialog.setMessage("确认提交改区域盘点数据？");
+        normalDialog.setMessage("确认提交该区域盘点数据？");
         normalDialog.setPositiveButton("确定",
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -672,6 +661,10 @@ public class StartPandianActivity extends BaseActivity {
                         //...To-do
                         for (int i = 0; i < results.size(); i++) {
                             results.get(i).setInventoryResult("盘亏");
+                            results.get(i).setActualQuantity(0);
+                            results.get(i).setDifferenceNum(
+                                    results.get(i).getActualQuantity() - results.get(i).getInventoryNum());
+
                             abnormalDatas.add(results.get(i));
                         }
                         dataHandler.sendEmptyMessage(UPDATEUI);
