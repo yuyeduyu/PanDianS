@@ -1,8 +1,10 @@
 package com.ascend.assetcheck_jinhua.ui.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +15,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -460,16 +463,16 @@ public class StartPandianActivity extends BaseActivity {
 //                        {"message":"上传结果为空!","resultCode":522}
 
                         if (back.getResultCode().equals("200")) {
-                            Toast.makeText(mBaseActivity, back.getResultCode() + ":" + back.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mBaseActivity, "数据上传成功", Toast.LENGTH_SHORT).show();
                             CompletePlace place = new CompletePlace();
                             place.setReceivePlace(taskRange);
                             place.setTaskId(Integer.valueOf(taskId));
                             EventBus.getDefault().post(place);
                             finish();
                         } else if (back.getResultCode().equals("521")) {
-                            Toast.makeText(mBaseActivity, back.getResultCode() + ":" + back.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mBaseActivity, "数据上传失败", Toast.LENGTH_SHORT).show();
                         } else if (back.getResultCode().equals("522")) {
-                            Toast.makeText(mBaseActivity, back.getResultCode() + ":" + back.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mBaseActivity, "上传结果为空", Toast.LENGTH_SHORT).show();
                         } else if (back.getResultCode().equals("404")) {
                             //登录信息失效
 //                            Toast.makeText(mBaseActivity, "登录过期，重新登录中", Toast.LENGTH_SHORT).show();
@@ -617,7 +620,6 @@ public class StartPandianActivity extends BaseActivity {
                         dataHandler.removeMessages(MSG_UPDATE_LISTVIEW);
                         dataHandler.sendEmptyMessage(MSG_UPDATE_LISTVIEW);
                         Scanflag = false;
-
                     }
                 }, 0, SCAN_INTERVAL);
                 fab.setText("停止");
@@ -732,6 +734,59 @@ public class StartPandianActivity extends BaseActivity {
         });
         window.setContentView(views);
         return alertDialog;
+    }
+
+    /**
+     * key receiver
+     */
+    private long startTime = 0;
+    private boolean keyUpFalg = true;
+    private BroadcastReceiver keyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int keyCode = intent.getIntExtra("keyCode", 0);
+            // H941
+            if (keyCode == 0) {
+                keyCode = intent.getIntExtra("keycode", 0);
+            }
+            boolean keyDown = intent.getBooleanExtra("keydown", false);
+            if (keyUpFalg && keyDown && System.currentTimeMillis() - startTime > 500) {
+                keyUpFalg = false;
+                startTime = System.currentTimeMillis();
+                if (keyCode == KeyEvent.KEYCODE_F3) {
+                    fabClick();
+                }
+                return;
+            } else if (keyDown) {
+                startTime = System.currentTimeMillis();
+            } else {
+                keyUpFalg = true;
+            }
+
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        txNum.setText("0");
+//        UHfData.lsTagList.clear();
+//        UHfData.dtIndexMap.clear();
+//        if (myAdapter != null) {
+//            myAdapter.mList.clear();
+//        }
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.rfid.FUN_KEY");
+        registerReceiver(keyReceiver, filter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        cancelScan();
+        unregisterReceiver(keyReceiver);
     }
 }
 
